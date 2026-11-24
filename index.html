@@ -10283,5 +10283,5 @@ window.dmgAnotherYear=function(){
 </script>
 
 <script id="dmg-sw-register">
-if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){window.addEventListener('load',function(){setTimeout(function(){navigator.serviceWorker.register('sw.js').catch(function(){});},15000);});}
 </script>
