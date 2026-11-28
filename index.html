@@ -43,7 +43,7 @@ function done(){
 function block(e){
  if(ready)return;
  var t=e.target;if(!t||!t.closest)return;
- if(t.closest('#dahmieSplash,#dmgViewBtn,#dmgViewMenu'))return;
+ if(t.closest('#dahmieSplash,#dahmieSplash2,#dmgViewBtn,#dmgViewMenu'))return;
  var el=t.closest('button,input,select,[onclick]');
  if(!el)return;
  e.preventDefault();e.stopPropagation();
@@ -267,6 +267,25 @@ if(document.readyState==='complete'||document.readyState==='interactive')done();
   <div class="dahmieSplashVersion">V5</div>
   <button id="dahmieSplashGo" type="button" aria-label="Continue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></button>
 </div>
+<!-- DAHMIE second welcome page (green) -->
+<div id="dahmieSplash2" aria-label="Welcome" style="display:none">
+  <div class="dahmieSplash2Title">WELCOME</div>
+  <div class="dahmieSplash2Tag">Practise &bull; Study &bull; Pass</div>
+  <div class="dahmieSplash2Subjects">Biology &bull; Chemistry &bull; Physics &bull; Mathematics</div>
+  <button id="dahmieSplashGo2" type="button" aria-label="Continue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></button>
+</div>
+<style id="dahmieSplash2Style">
+#dahmieSplash2{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;flex-direction:column;overflow:hidden;background:#157a3c;font-family:Impact,Haettenschweiler,"Arial Black",system-ui,sans-serif;opacity:0;transition:opacity .45s ease}
+#dahmieSplash2.dahmieSplash2On{opacity:1}
+#dahmieSplash2::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,#25b85a,#0a5a2b);pointer-events:none}
+#dahmieSplash2 .dahmieSplash2Title{position:relative;z-index:2;width:92%;text-align:center;color:#1fa34f;font-size:clamp(40px,13vw,86px);line-height:1.05;letter-spacing:2px;-webkit-text-stroke:6px #fff;paint-order:stroke fill;text-shadow:0 3px 0 #fff,0 7px 14px rgba(0,40,10,.32);transform:rotate(-1deg)}
+#dahmieSplash2 .dahmieSplash2Tag{position:relative;z-index:2;margin-top:18px;text-align:center;color:#fff;font:700 clamp(18px,5.4vw,26px) system-ui,Arial,sans-serif;letter-spacing:.6px}
+#dahmieSplash2 .dahmieSplash2Subjects{position:absolute;z-index:2;bottom:34px;left:0;right:0;padding:0 16px;text-align:center;color:rgba(255,255,255,.92);font:600 15px system-ui,Arial,sans-serif;letter-spacing:.4px}
+#dahmieSplashGo2{position:absolute;z-index:3;left:50%;bottom:108px;transform:translateX(-50%);width:78px;height:78px;border-radius:50%;border:3px solid #fff;background:#fff;color:#157a3c;display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 8px 26px rgba(0,40,10,.45);-webkit-tap-highlight-color:transparent;animation:dmgGoPulse 1.7s ease-in-out infinite}
+#dahmieSplashGo2 svg{width:38px;height:38px;display:block}
+#dahmieSplashGo2:active{background:#e3f7ea}
+@media(prefers-reduced-motion:reduce){#dahmieSplashGo2{animation:none}}
+</style>
 <script>document.documentElement.classList.add("dmg-welcome");</script>
 <style id="dahmieSplashStyle">
 #dahmieSplash{
@@ -339,10 +358,21 @@ html.dmg-welcome #dmgViewMenu:not(.dmg-hide){display:block!important;z-index:214
 <script>
 (function(){
   function closeSplash(){
-    var s=document.getElementById('dahmieSplash');
-    if(!s)return;
-    s.classList.add('dahmieSplashHide');
-    setTimeout(function(){ if(s.parentNode) s.parentNode.removeChild(s); },500);
+    ['dahmieSplash','dahmieSplash2'].forEach(function(id){
+      var s=document.getElementById(id);
+      if(!s)return;
+      s.classList.add('dahmieSplashHide');
+      s.style.opacity='0';s.style.visibility='hidden';s.style.transition='opacity .45s ease,visibility .45s ease';
+      setTimeout(function(){ if(s.parentNode) s.parentNode.removeChild(s); },500);
+    });
+  }
+  function showGreen(){
+    var red=document.getElementById('dahmieSplash'),g=document.getElementById('dahmieSplash2');
+    if(!g){leaveWelcome();return;}
+    g.style.display='flex';
+    void g.offsetWidth;
+    g.classList.add('dahmieSplash2On');
+    if(red){setTimeout(function(){red.classList.add('dahmieSplashHide');setTimeout(function(){if(red.parentNode)red.parentNode.removeChild(red);},500);},450);}
   }
   function leaveWelcome(){
     document.documentElement.classList.remove('dmg-welcome');
@@ -351,8 +381,9 @@ html.dmg-welcome #dmgViewMenu:not(.dmg-hide){display:block!important;z-index:214
   }
   window.dahmieCloseSplash=leaveWelcome;
   document.addEventListener('click',function(e){
-    var b=e.target&&e.target.closest&&e.target.closest('#dahmieSplashGo');
-    if(b){e.preventDefault();leaveWelcome();}
+    var t=e.target&&e.target.closest?e.target:null;if(!t)return;
+    if(t.closest('#dahmieSplashGo')){e.preventDefault();showGreen();return;}
+    if(t.closest('#dahmieSplashGo2')){e.preventDefault();leaveWelcome();}
   });
 })();
 </script>
@@ -6248,8 +6279,7 @@ function submitWebSearch(event){
   var armed=false, noticeTimer=null;
   function protectedAreaActive(){
     var exam=document.getElementById('exam');
-    var study=document.getElementById('studyPanel');
-    return !!((exam && !exam.classList.contains('hidden')) || (study && !study.classList.contains('hidden')));
+    return !!(exam && !exam.classList.contains('hidden'));
   }
   function arm(){
     if(!protectedAreaActive()){armed=false;return;}
@@ -6260,7 +6290,7 @@ function submitWebSearch(event){
   function tellStudent(){
     var n=document.getElementById('dmg-cbt-back-notice');
     if(!n)return;
-    n.textContent='You are still using the Study Centre or CBT. Use the on-screen Back/Home controls to navigate safely.';
+    n.textContent='Your CBT is still in progress. Use the exam’s Finish/Submit button when you are ready to leave.';
     n.classList.add('show');
     clearTimeout(noticeTimer);
     noticeTimer=setTimeout(function(){n.classList.remove('show');},2600);
@@ -6268,8 +6298,8 @@ function submitWebSearch(event){
   window.addEventListener('popstate',function(){
     if(!protectedAreaActive()){armed=false;return;}
     armed=false;
-    var quit=window.confirm('You are still in the Study Centre or CBT. Are you sure you want to leave this page?');
-    if(quit){return;}
+    var quit=window.confirm('Your CBT is still in progress. Are you sure you want to leave this page?');
+    if(quit){try{history.back();}catch(e){}return;}
     arm();
     tellStudent();
   });
@@ -10330,3 +10360,18 @@ window.dmgAnotherYear=function(){
 <script id="dmg-sw-register">
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){window.addEventListener('load',function(){setTimeout(function(){navigator.serviceWorker.register('sw.js').catch(function(){});},15000);});}
 </script>
+
+<style id="dmg-contrast-fix">
+/* Worked-example cards: force clear light text on their dark card */
+#studyLessonContent .tb-chapter .dx-ex,#studyLessonContent .tb-chapter .dx-ex *,#studyLessonContent .dx-ex,#studyLessonContent .dx-ex *{color:#f1f5f4!important}
+#studyLessonContent .tb-chapter .dx-ex .dx-tag,#studyLessonContent .tb-chapter .dx-ex h4{color:#68e0bd!important}
+/* Study Centre home headline was dark navy on a dark panel */
+#studyPanel .study-hero h1{color:#ffffff!important}
+#studyPanel .study-hero h1 em{color:#f2dc9b!important}
+/* Light mint text on light backgrounds: make it dark teal so it can be read */
+#studyPanel #studyTotalTopics,#studyPanel #studyDoneTopics,#studyPanel #studyPercent{color:#14665c!important}
+#studyPanel .study-breadcrumb,#studyPanel .study-offline{color:#14665c!important}
+#studyPanel .study-topics-intro,#studyPanel #studyTopics>p{color:#3d5260!important}
+/* keep the last lines clear of the bottom icon bar */
+#studyPanel{padding-bottom:120px!important;box-sizing:border-box}
+</style>
